@@ -25,30 +25,28 @@ export class BasicAuthenticationService {
   //   }
   // }
 
-  executeAuthenticationService(username: string, password: string): any {
+  executeJWTAuthenticationService(username: string, password: string): any {
 
     // there is a javascript function called window.btoa to encode a string
     // created encoded string with user and password:
-    let basicAuthHeaderString = "Basic " + window.btoa(username + ":" + password) // the space after "BASIC " is important
+    let basicAuthHeaderString = "Bearer " + window.btoa(username + ":" + password) // the space after "BASIC " is important
 
 
 
-    //HttpHeaders is an Angular object (see import on top) and will be used to be send with the next GET request.
-    let myHeader = new HttpHeaders({
-      Authorization: basicAuthHeaderString
-    })
 
 
-    return (this.http.get<AuthenticationBean>(
-      `${API_URL}/basicauth`,
-      { headers: myHeader })) // we add myHeader as headers that will be an HttpHeaders object containing the login information. you can omit "headers" and just put in "{myHeader}"
+    return (this.http.post<any>(
+      `${API_URL}/authenticate`,{
+        username, //  this is a shortcut, it will look actually like this:
+        password  //{  "username" :"xxxxx",  "password": "yyyyy" } **** xxx,yyy are the values of username and password
+      }))
       .pipe( // 28min says: pipe what should be done if the request successes. We will use this in login.component.ts
         map(
           data => {
             console.log("Running inside basic-authentication.service.ts -> pipe -> map with following data")
             console.log(data)
             window.sessionStorage.setItem(AUTHENTICATED_USER, username)
-            sessionStorage.setItem(TOKEN, basicAuthHeaderString) // 28min uses "token" here
+            sessionStorage.setItem(TOKEN, `Bearer ${data.token}`) // 28min uses "token" here
             return data
           }
         )

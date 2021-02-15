@@ -35,10 +35,10 @@ export class LoginComponent implements OnInit {
       this.invalidLogin = true
   }
 
-  handleBasicAuthLogin(): void {
+  handleJWTBasicAuthLogin(): void {
     console.warn("Starting login.component.ts : handleBasicAuthLogin()")
     console.log("Auth Login with: "+this.username + "," + this.password);
-    this.basicAuthenticationService.executeAuthenticationService(this.username, this.password)
+    this.basicAuthenticationService.executeJWTAuthenticationService(this.username, this.password)
       .subscribe(
         data => {
           console.log("login.component.ts: executing the subscribe method . Retrieved data from Server");
