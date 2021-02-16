@@ -8,6 +8,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Todo } from '../list-todos/list-todos.component';
+import { BasicAuthenticationService } from '../service/basic-authentication.service';
 import { TodoDataService } from '../service/data/todo-data.service';
 
 @Component({
@@ -28,7 +29,8 @@ export class TodoComponent implements OnInit {
   constructor(
     private todoService: TodoDataService, // dependency injection so I can use The dataService
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private basicAuthenticationService: BasicAuthenticationService
   ) { }
 
   ngOnInit(): void {
@@ -36,7 +38,7 @@ export class TodoComponent implements OnInit {
     console.log("ngOnInit: getting data for ID:" + this.id)
     this.todo = new Todo(this.id, '', new Date(), false)
     if (this.id > 0)
-      this.todoService.retrieveTodo('user01', this.id).subscribe(
+      this.todoService.retrieveTodo(this.basicAuthenticationService.getAuthenticatedUser(), this.id).subscribe(
         data => this.todo = data,
         error => {
           console.error("!!! Server responded with an ERROR : ")
@@ -46,9 +48,9 @@ export class TodoComponent implements OnInit {
   }
 
   saveTodo(): void {
-    if (this.id <= 0) {
+    if (this.id ==-1) {
           // create Todo
-          this.todoService.createTodo("user01", this.todo)
+          this.todoService.createTodo(this.basicAuthenticationService.getAuthenticatedUser(), this.todo)
         .subscribe(
           data => {
             console.log(data)
@@ -57,7 +59,7 @@ export class TodoComponent implements OnInit {
         )
 
     } else {
-      this.todoService.updateTodo("user01", this.id, this.todo)
+      this.todoService.updateTodo(this.basicAuthenticationService.getAuthenticatedUser(), this.id, this.todo)
         .subscribe(
           data => {
             console.log(data)
